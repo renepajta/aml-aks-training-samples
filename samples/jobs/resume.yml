@@ -1,0 +1,34 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+type: command
+display_name: tutorial-checkpoint-resume
+code: ../src
+command: >-
+  python tutorial_job.py resume
+  --data ${{inputs.training_data}}
+  --checkpoint ${{inputs.checkpoint}}
+  --model-output ${{outputs.model_output}}
+  --checkpoint-output ${{outputs.checkpoint_output}}
+  --target-epoch 8
+inputs:
+  training_data:
+    type: uri_file
+    path: ../data/training.json
+    mode: ro_mount
+  checkpoint:
+    type: uri_folder
+    path: azureml://jobs/YOUR_TRAINING_JOB_NAME/outputs/checkpoint_output
+    mode: ro_mount
+outputs:
+  model_output:
+    type: uri_folder
+    mode: rw_mount
+  checkpoint_output:
+    type: uri_folder
+    mode: rw_mount
+compute: azureml:YOUR_KUBERNETES_COMPUTE
+resources:
+  instance_type: YOUR_CPU_INSTANCE_TYPE
+  instance_count: 1
+environment: azureml:YOUR_CPU_ENVIRONMENT:1
+limits:
+  timeout: 300

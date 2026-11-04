@@ -1,0 +1,12 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+type: command
+display_name: tutorial-running-cancel
+code: ../src
+command: python tutorial_job.py hold --seconds 240
+compute: azureml:YOUR_KUBERNETES_COMPUTE
+resources:
+  instance_type: YOUR_CPU_INSTANCE_TYPE
+  instance_count: 1
+environment: azureml:YOUR_CPU_ENVIRONMENT:1
+limits:
+  timeout: 300

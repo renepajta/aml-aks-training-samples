@@ -1,0 +1,47 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+display_name: tutorial-two-step-pipeline
+settings:
+  default_compute: azureml:YOUR_KUBERNETES_COMPUTE
+jobs:
+  prepare:
+    code: ../src
+    command: >-
+      python tutorial_job.py prepare
+      --data ${{inputs.training_data}}
+      --output ${{outputs.prepared}}
+    inputs:
+      training_data:
+        type: uri_file
+        path: ../data/training.json
+        mode: ro_mount
+    outputs:
+      prepared:
+        type: uri_folder
+        mode: rw_mount
+    environment: azureml:YOUR_CPU_ENVIRONMENT:1
+    compute: azureml:YOUR_KUBERNETES_COMPUTE
+    resources:
+      instance_type: YOUR_CPU_INSTANCE_TYPE
+      instance_count: 1
+    limits:
+      timeout: 300
+  consume:
+    code: ../src
+    command: >-
+      python tutorial_job.py consume
+      --input ${{inputs.prepared}}
+      --output ${{outputs.result}}
+    inputs:
+      prepared: ${{parent.jobs.prepare.outputs.prepared}}
+    outputs:
+      result:
+        type: uri_folder
+        mode: rw_mount
+    environment: azureml:YOUR_CPU_ENVIRONMENT:1
+    compute: azureml:YOUR_KUBERNETES_COMPUTE
+    resources:
+      instance_type: YOUR_CPU_INSTANCE_TYPE
+      instance_count: 1
+    limits:
+      timeout: 300

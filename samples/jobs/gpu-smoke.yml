@@ -1,0 +1,18 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+type: command
+display_name: gpu-cuda-smoke
+code: ../src
+command: >-
+  python gpu_smoke.py
+  --output-dir ${{outputs.smoke_result}}
+outputs:
+  smoke_result:
+    type: uri_folder
+    mode: rw_mount
+compute: azureml:YOUR_KUBERNETES_COMPUTE
+resources:
+  instance_type: YOUR_GPU_INSTANCE_TYPE
+  instance_count: 1
+environment: azureml:YOUR_CUDA_PYTORCH_ENVIRONMENT:1
+limits:
+  timeout: 300
